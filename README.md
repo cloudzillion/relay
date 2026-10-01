@@ -1,6 +1,6 @@
 # Cloudzillion Relay Daemon
 
-Lightweight on-premises hardware relay daemon that bridges Cloudzillion cloud print queues to local network thermal printers in real time via Server-Sent Events (SSE).
+Lightweight on-premises hardware relay daemon that bridges Cloudzillion cloud print queues to local network printers (Epson TM-U220 impact dot-matrix and thermal tag printers) in real time via Server-Sent Events (SSE).
 
 ---
 
@@ -29,7 +29,7 @@ flowchart TD
    [ Relay Daemon ] (Local network edge agent)
           │  (Raw TCP Socket: Port 9100 / ESC/POS)
           ▼
-[ Thermal Tag Printer ]
+[ Epson TM-U220 / Impact Matrix Tag Printer ]
           │  (Physical print execution)
           ▼
    [ Relay Daemon ]
@@ -59,10 +59,12 @@ curl -O [https://raw.githubusercontent.com/cloudzillion/relay/main/docker-compos
 Create a `.env` file alongside `docker-compose.yml`:
 
 ```env
-STATION_ID=00000000-0000-0000-0000-000000000000
-STATION_API_KEY=your_raw_station_secret_here
-CLOUD_BASE_URL=[https://[TENANT].prozillion.com](https://[TENANT].prozillion.com)
-PRINTER_TIMEOUT_MS=5000
+CZ_STATION_ID=00000000-0000-0000-0000-000000000000
+CZ_STATION_KEY=your_raw_station_secret_here
+CZ_SERVER_URL=https://cloudzillion.com
+PRINTER_IP=192.168.4.200
+PRINTER_PORT=9100
+CZ_RECONNECT_INTERVAL_MS=5000
 LOG_LEVEL=info
 ```
 
@@ -82,13 +84,15 @@ docker compose logs -f
 
 ## Configuration Reference
 
-| Variable | Required | Default | Description |
-| :--- | :---: | :---: | :--- |
-| `STATION_ID` | **Yes** | — | UUID of the registered station in Cloudzillion. |
-| `STATION_API_KEY` | **Yes** | — | Plaintext secret key matching the station's hashed secret. |
-| `CLOUD_BASE_URL` | **Yes** | — | Base domain of the tenant application (e.g. `https://[TENANT].prozillion.com`). |
-| `PRINTER_TIMEOUT_MS` | No | `5000` | Socket connection timeout when attempting to reach thermal printer. |
-| `LOG_LEVEL` | No | `info` | Logging verbosity (`debug`, `info`, `warn`, `error`). |
+| Variable | Fallback Alias | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `CZ_STATION_ID` | `STATION_ID` | **Yes** | — | UUID of the registered station. |
+| `CZ_STATION_KEY` | `STATION_API_KEY` | **Yes** | — | Secret key matching the station's hashed secret. |
+| `CZ_SERVER_URL` | `CLOUD_BASE_URL` | No | `[https://cloudzillion.com](https://cloudzillion.com)` | Base URL of central platform gateway (bypasses tenant domains). |
+| `PRINTER_IP` | — | **Yes** | `192.168.4.200` | Local IPv4 address of the physical printer. |
+| `PRINTER_PORT` | — | No | `9100` | Raw TCP port (defaults automatically to 9100). |
+| `CZ_RECONNECT_INTERVAL_MS` | — | No | `5000` | Backoff reconnect interval in milliseconds. |
+| `LOG_LEVEL` | — | No | `info` | Logging verbosity (`debug`, `info`, `warn`, `error`). |
 
 ---
 
@@ -117,7 +121,7 @@ npm run dev
 
 ```bash
 npm run build
-npm start
+npm run start
 ```
 
 ---

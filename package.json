@@ -1,0 +1,33 @@
+{
+    "name": "@cloudzillion/relay",
+    "version": "1.0.0",
+    "description": "Cloudzillion in-store hardware relay daemon for real-time thermal tag printing",
+    "type": "module",
+    "homepage": "https://github.com/cloudzillion/relay#readme",
+    "bugs": {
+        "url": "https://github.com/cloudzillion/relay/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/cloudzillion/relay.git"
+    },
+    "license": "MIT",
+    "main": "dist/index.js",
+    "scripts": {
+        "dev": "node --loader ts-node/esm --watch src/index.ts",
+        "compile": "tsc",
+        "bundle": "esbuild src/index.ts --bundle --platform=node --target=node20 --outfile=dist/bundle.cjs --format=cjs",
+        "build": "bash ./build.sh",
+        "start": "node --env-file=.env dist/index.js"
+    },
+    "dependencies": {
+        "eventsource": "^2.0.2"
+    },
+    "devDependencies": {
+        "@types/eventsource": "^1.1.15",
+        "@types/node": "^20.14.0",
+        "esbuild": "^0.21.5",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.4.5"
+    }
+}

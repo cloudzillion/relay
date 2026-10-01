@@ -1,0 +1,19 @@
+services:
+  relay:
+    image: ghcr.io/cloudzillion/relay:latest
+    container_name: cz-relay
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - CZ_SERVER_URL=${CZ_SERVER_URL:-${CLOUD_BASE_URL:-https://cloudzillion.com}}
+      - CZ_STATION_ID=${CZ_STATION_ID:-${STATION_ID}}
+      - CZ_STATION_KEY=${CZ_STATION_KEY:-${STATION_API_KEY}}
+      - PRINTER_IP=${PRINTER_IP:-192.168.4.200}
+      - PRINTER_PORT=${PRINTER_PORT:-}
+      - CZ_RECONNECT_INTERVAL_MS=${CZ_RECONNECT_INTERVAL_MS:-5000}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
